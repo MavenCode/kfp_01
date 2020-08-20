@@ -21,6 +21,8 @@ implementation:
             else
                 mkdir -p "$(dirname "$1")"
             fi
+            echo $1
+            ls $1
 
             gsutil -m rsync -r "$0" "$1" # gsutil cp has different path handling than Linux cp. It always puts the source directory (name) inside the destination directory. gsutil rsync does not have that problem.
         - inputValue: GCS path
