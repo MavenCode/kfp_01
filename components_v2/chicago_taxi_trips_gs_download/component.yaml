@@ -2,7 +2,7 @@ name: Download Data from Google Storage
 inputs:
 - {name: GCS path, type: URI}
 outputs:
-- {name: Table, description: 'Result type depends on format. CSV and TSV have header.'}
+- {name: Data}
 implementation:
     container:
         image: google/cloud-sdk
@@ -14,17 +14,12 @@ implementation:
             if [ -n "${GOOGLE_APPLICATION_CREDENTIALS}" ]; then
                 gcloud auth activate-service-account --key-file="${GOOGLE_APPLICATION_CREDENTIALS}"
             fi
-
             stat_result=$(gsutil ls -d "$0")
             if [[ "$stat_result" == */ ]]; then
                 mkdir -p "$1" # When source path is a directory, gsutil requires the destination to also be a directory
             else
-                mkdir -p "$(dirname "${0}")"
+                mkdir -p "$(dirname "$1")"
             fi
-            
-            #output_path="/tmp/chicago-taxi.csv"
-            gsutil -m rsync -r "${0}" "${1}" # gsutil cp has different path handling than Linux cp. It always puts the source directory (name) inside the destination directory. gsutil rsync does not have that problem.
-            echo $1
-            ls $1
+            gsutil -m rsync -r "$0" "$1" # gsutil cp has different path handling than Linux cp. It always puts the source directory (name) inside the destination directory. gsutil rsync does not have that problem.
         - inputValue: GCS path
-        - outputPath: Table
+        - outputPath: Data
