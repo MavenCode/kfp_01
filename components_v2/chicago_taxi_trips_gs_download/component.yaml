@@ -19,12 +19,11 @@ implementation:
             if [[ "$stat_result" == */ ]]; then
                 mkdir -p "$1" # When source path is a directory, gsutil requires the destination to also be a directory
             else
-                mkdir -p "$(dirname "${outputPath}")"
+                mkdir -p "$(dirname "${0}")"
             fi
+            output_path="/tmp/chicago-taxi.csv"
+            gsutil -m rsync -r "${0}" "${outputPath}" # gsutil cp has different path handling than Linux cp. It always puts the source directory (name) inside the destination directory. gsutil rsync does not have that problem.
             echo $1
             ls $1
-          
-
-            gsutil -m rsync -r "${outputPath}" "$1" # gsutil cp has different path handling than Linux cp. It always puts the source directory (name) inside the destination directory. gsutil rsync does not have that problem.
         - inputValue: GCS path
         - outputPath: Table
