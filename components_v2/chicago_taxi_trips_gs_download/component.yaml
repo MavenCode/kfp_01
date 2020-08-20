@@ -2,7 +2,7 @@ name: Download Data from Google Storage
 inputs:
 - {name: GCS path, type: URI}
 outputs:
-- {name: Data}
+- {name: Table, description: 'Result type depends on format. CSV and TSV have header.'}
 implementation:
     container:
         image: google/cloud-sdk
@@ -20,6 +20,7 @@ implementation:
             else
                 mkdir -p "$(dirname "$1")"
             fi
-            gsutil -m rsync -r "$0" "$1" # gsutil cp has different path handling than Linux cp. It always puts the source directory (name) inside the destination directory. gsutil rsync does not have that problem.
+            #gsutil -m rsync -r "$0" "$1" # gsutil cp has different path handling than Linux cp. It always puts the source directory (name) inside the destination directory. gsutil rsync does not have that problem.
+            gsutil cat $0 | tee $1
         - inputValue: GCS path
-        - outputPath: Data
+        - outputPath: Table
